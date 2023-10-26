@@ -10,6 +10,10 @@ TagManager:
   - Portal2
   - ReversePortal
   - Portal3
+  - Pad1
+  - Pad2
+  - Orb1
+  - Portal4
   layers:
   - Default
   - TransparentFX

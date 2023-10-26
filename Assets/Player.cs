@@ -24,11 +24,16 @@ public class Player : MonoBehaviour
     public SpriteRenderer spriteRenderer;
     public Sprite Cube;
     public Sprite Circle;
+    public Sprite Isometric;
+    public float timer = 0.2f;
+    public bool onOrbCollision = false;
+    BoxCollider2D bc;
 
 
 
     void Start()
     {
+        bc = GetComponent<BoxCollider2D>();
         rb = GetComponent<Rigidbody2D>();
         CurrState = 1;
         spriteRenderer.sprite = Cube;
@@ -36,6 +41,40 @@ public class Player : MonoBehaviour
 
     void Update()
     {
+        if (CurrState == 5)
+        {
+            bc.size = new Vector3(1, 0.55f, 1);
+        }
+        else
+        {
+            bc.size = new Vector3(1, 1, 1);
+        }
+        if (onOrbCollision == true)
+        {
+            timer -= Time.deltaTime;
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                if (CurrState == 1)
+                {
+                    rb.velocity = new Vector3(SpeedValues[(int)CurrentSpeed], 0, 0);
+                    rb.AddForce(Vector2.up * 6f, ForceMode2D.Impulse);
+                    onOrbCollision = false;
+                    timer = 0.2f;
+                }
+                else if (CurrState == 3)
+                {
+                    rb.velocity = new Vector3(SpeedValues[(int)CurrentSpeed], 0, 0);
+                    rb.AddForce(Vector2.up * -6f, ForceMode2D.Impulse);
+                    onOrbCollision = false;
+                    timer = 0.2f;
+                }
+            }
+            if (timer <= 0)
+            {
+                onOrbCollision = false;
+                timer = 0.2f;
+            }
+        }
 
         if (CurrState == 1)
         {
@@ -47,6 +86,7 @@ public class Player : MonoBehaviour
                 //Jump
                 if (Grounded == true)
                 {
+                    rb.velocity = new Vector3(SpeedValues[(int)CurrentSpeed], 0, 0);
                     rb.AddForce(Vector2.up * 4.5f, ForceMode2D.Impulse);
                     Grounded = false;
                 }
@@ -56,7 +96,7 @@ public class Player : MonoBehaviour
         {
             if (Grounded)
             {
-                rb.gravityScale = 0;
+            rb.gravityScale = 0;
             }
             playerTransform.localScale = new Vector3(0.2f, 0.2f, 1);
             transform.position += Vector3.right * SpeedValues[(int)CurrentSpeed] * Time.deltaTime;
@@ -80,6 +120,7 @@ public class Player : MonoBehaviour
                 //Jump
                 if (Grounded == true)
                 {
+                    rb.velocity = new Vector3(SpeedValues[(int)CurrentSpeed], 0, 0);
                     rb.AddForce(Vector2.up * -4.5f, ForceMode2D.Impulse);
                     Grounded = false;
                 }
@@ -105,6 +146,22 @@ public class Player : MonoBehaviour
 
             }
         }
+        else if (CurrState == 5)
+        {
+            transform.position += Vector3.right * SpeedValues[(int)CurrentSpeed] * Time.deltaTime;
+            playerTransform.localScale = new Vector3(0.7f, 0.5f, 1);
+            if (Input.GetKey(KeyCode.Space))
+            {
+                if (rb.gravityScale == 1)
+                {
+                    rb.gravityScale = -1;
+                }
+            }
+            else
+            {
+                rb.gravityScale = 1;
+            }
+        }
         else
         {
             CurrState = 1;
@@ -124,21 +181,15 @@ public class Player : MonoBehaviour
 
         if (collision.gameObject.tag == "Spike")
         {
-            transform.position = new Vector3(-5f, -3.6f, gameObject.transform.position.z);
+            transform.position = new Vector3(-6f, -3.6f, gameObject.transform.position.z);
             CurrState = 1;
             spriteRenderer.sprite = Cube;
             attempts++;
-            Debug.Log(attempts);
             attemptsCounter.text = "Attempts: " + attempts.ToString();
         }
         if (collision.gameObject.tag == "Ground")
         {
             Grounded = true;
-        }
-        else
-        {
-            Debug.Log(collision.gameObject.name);
-            Debug.Log(collision.gameObject.tag);
         }
         Thread.Sleep(1);
     }
@@ -167,6 +218,30 @@ public class Player : MonoBehaviour
             rb.gravityScale = 3;
             spriteRenderer.sprite = Circle;
         }
+        if (trigger.gameObject.tag == "Pad1")
+        {
+            if (CurrState == 1)
+            {
+                rb.velocity = new Vector3(SpeedValues[(int)CurrentSpeed], 0, 0);
+                rb.AddForce(Vector2.up * 6f, ForceMode2D.Impulse);
+                Grounded = false;
+            }
+            if (CurrState == 3)
+            {
+                rb.velocity = new Vector3(SpeedValues[(int)CurrentSpeed], 0, 0);
+                rb.AddForce(Vector2.up * -6f, ForceMode2D.Impulse);
+                Grounded = false;
+            }
+        }
+        if (trigger.gameObject.tag == "Orb1")
+        {
+            onOrbCollision = true;
+        }
+        if (trigger.gameObject.tag == "Portal4")
+        {
+            CurrState = 5;
+            spriteRenderer.sprite = Isometric;
+            
+        }
     }
-
 }

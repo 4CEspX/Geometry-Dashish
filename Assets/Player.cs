@@ -184,6 +184,7 @@ public class Player : MonoBehaviour
             transform.position = new Vector3(-6f, -3.6f, gameObject.transform.position.z);
             CurrState = 1;
             spriteRenderer.sprite = Cube;
+            CurrentSpeed = Speeds.Slow;
             attempts++;
             attemptsCounter.text = "Attempts: " + attempts.ToString();
         }
@@ -242,6 +243,18 @@ public class Player : MonoBehaviour
             CurrState = 5;
             spriteRenderer.sprite = Isometric;
             
+        }
+        if (trigger.gameObject.tag == "Speed1")
+        {
+            CurrentSpeed = Speeds.Slow;
+        }
+        if (trigger.gameObject.tag == "Speed2")
+        {
+            CurrentSpeed = Speeds.Fast;
+        }
+        if (trigger.gameObject.tag == "Speed3")
+        {
+            CurrentSpeed = Speeds.Fastest;
         }
     }
 }
